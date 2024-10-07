@@ -8,6 +8,10 @@ export enum TokenType {
     Let
 }
 
+const KEYWORDS : Record<string, TokenType> = {
+    "let" : TokenType.Let
+}
+
 export interface Token{
     value :string;
     type :TokenType;
@@ -15,6 +19,16 @@ export interface Token{
 
 function token(value = "", type : TokenType){
     return {value, type};
+}
+
+function isAlphabetic(src : string){
+    return src.toLowerCase() != src.toUpperCase();
+}
+
+function isInt(src : string){
+    const c = src.charAt(0);
+    const bound = ['0'.charAt(0), '9'.charAt(0)];
+    return (c >= bound[0] && c <= bound[1] );
 }
 
 export function tokenize(source : string) : Token[] {
@@ -29,6 +43,26 @@ export function tokenize(source : string) : Token[] {
             tokens.push(token(src.shift(), TokenType.BinaryOperator));
         }else if(src[0] =='='){
             tokens.push(token(src.shift(), TokenType.Equals));
+        }else{
+            if(isInt(src[0])){
+                let num = "";
+                while(src.length > 0 && isInt(src[0])){
+                    num += src.shift();
+                }
+                tokens.push(token(num, TokenType.Number));
+            }else if(isAlphabetic(src[0])){
+                let variable = "";
+                while(src.length > 0 && isAlphabetic(src[0])){
+                    variable += src.shift();
+                }
+                const reserved = KEYWORDS[variable];
+                if(reserved == undefined){
+                    tokens.push(token(variable, TokenType.Identifier));
+                }else{
+                    tokens.push(token(variable, reserved));
+                }
+                
+            }
         }
     }
     return tokens;
