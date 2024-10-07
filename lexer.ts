@@ -31,6 +31,11 @@ function isInt(src : string){
     return (c >= bound[0] && c <= bound[1] );
 }
 
+function isSkippable(src : string){
+    return src == ' ' || src == '\t'  || src == '\n' ;
+}
+
+
 export function tokenize(source : string) : Token[] {
     const tokens = new Array<Token>(); // Consider about memory
     const src = source.split("");
@@ -62,6 +67,10 @@ export function tokenize(source : string) : Token[] {
                     tokens.push(token(variable, reserved));
                 }
                 
+            }else if(isSkippable(src[0])){
+                src.shift();
+            }else{
+                console.log("Unrecognized : ", src[0]);
             }
         }
     }
