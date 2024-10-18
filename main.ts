@@ -2,7 +2,7 @@ import Parser from "./source/parser";
 
 repl();
 
-async function repl() {
+function repl() {
   const parser = new Parser();
   console.log("\nRepl v0.1");
 
