@@ -25,5 +25,5 @@ export interface Identifier extends Expression {
 
 export interface NumericLiteral extends Expression {
     kind : "NumericLiteral";
-    symbol : number
+    value: number;
 }
