@@ -11,7 +11,7 @@ export default class Parser {
         return this.parseExpression();
     }
     private parseExpression() : Expression {
-        return this.parseExpression();
+        return this.parsePrimaryExpression();
     }
     public produceAST( source : string) : Program {
         this.tokens = tokenize(source);
