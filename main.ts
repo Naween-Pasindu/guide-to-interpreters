@@ -1,4 +1,4 @@
-import Parser from "./source/parser";
+import Parser from "./source/parser.ts";
 
 repl();
 
