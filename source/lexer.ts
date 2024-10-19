@@ -6,11 +6,13 @@ export enum TokenType {
     CloseParen,
     BinaryOperator,
     Let,
-    EOF
+    EOF,
+    NULL
 }
 
 const KEYWORDS : Record<string, TokenType> = {
-    "let" : TokenType.Let
+    "let" : TokenType.Let,
+    "NULL" : TokenType.NULL
 }
 
 export interface Token{
@@ -62,7 +64,7 @@ export function tokenize(source : string) : Token[] {
                     variable += src.shift();
                 }
                 const reserved = KEYWORDS[variable];
-                if(reserved == undefined){
+                if(typeof reserved == "number"){
                     tokens.push(token(variable, TokenType.Identifier));
                 }else{
                     tokens.push(token(variable, reserved));
