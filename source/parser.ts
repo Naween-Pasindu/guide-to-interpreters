@@ -11,7 +11,7 @@ export default class Parser {
         return this.parseExpression();
     }
     private parseExpression() : Expression {
-        return this.parsePrimaryExpression();
+        return this.parseAdditiveExpression();
     }
     public produceAST( source : string) : Program {
         this.tokens = tokenize(source);
@@ -30,6 +30,41 @@ export default class Parser {
     private eat() {
         return this.tokens.shift() as Token;
     }
+    private expect(type: TokenType, err: any) {
+        const prev = this.tokens.shift() as Token;
+        if (!prev || prev.type != type) {
+          console.error("Parser Error:\n", err, prev, " - Expecting: ", type);
+          Deno.exit(1);
+        }
+        return prev;
+      }
+    private parseAdditiveExpression() : Expression {
+        let left= this.parseMultiplicitaveExpression();
+        while (this.atZero().value == "+" || this.atZero().value == "-"){
+            const operator = this.eat().value;
+            const right = this.parseMultiplicitaveExpression();
+            left = {
+                kind : "BinaryExpr",
+                left,right, operator
+            } as BinaryExpression;
+        }
+        return left;
+    }
+    private parseMultiplicitaveExpression(): Expression {
+        let left = this.parsePrimaryExpression();
+        while (this.atZero().value == "/" || this.atZero().value == "*" || this.atZero().value == "%") {
+          const operator = this.eat().value;
+          const right = this.parsePrimaryExpression();
+          left = {
+            kind: "BinaryExpr",
+            left,
+            right,
+            operator,
+          } as BinaryExpression;
+        }
+    
+        return left;
+    }
     private parsePrimaryExpression () : Expression {
         const token = this.atZero().type;
         switch(token){
@@ -37,9 +72,14 @@ export default class Parser {
                 return { kind: "Identifier", symbol: this.eat().value } as Identifier;
             case TokenType.Number:
                 return { kind: "NumericLiteral", value: parseFloat(this.eat().value)} as NumericLiteral
-            
+            case TokenType.OpenParen:
+                this.eat();
+                const value = this.parseExpression();
+                this.expect(TokenType.CloseParen, "Expected closing parenthesis.");
+                return value;
             default:
                 console.log("Unexpected error : ", this.atZero());
+                Deno.exit(1)
                 //return { kind: "Program" } as Stmt;
         }
     }
